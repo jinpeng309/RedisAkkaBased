@@ -26,6 +26,7 @@ object RequestCommand {
       case List("DECR", key) => DECR(key)
       case List("DECRBY", key, step) => DECRBY(key, step)
       case List("GETRANGE", key, start, end) => GETRANGE(key, start, end)
+      case List("SETEX", key, expireTime, value) => SETEX(key, expireTime, value)
     }
   }
 }

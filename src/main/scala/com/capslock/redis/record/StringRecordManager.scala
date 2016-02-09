@@ -1,16 +1,22 @@
 package com.capslock.redis.record
 
-import akka.actor.{ActorRef, Actor, ActorLogging}
-import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
+import java.util.concurrent.TimeUnit
+
+import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.capslock.redis.command.response._
 import com.capslock.redis.command.string.StringCommand._
+import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
 import com.capslock.redis.utils.StringUtils
+
+import scala.concurrent.duration.Duration
 
 /**
   * Created by capsl on 2016/2/8.
   */
 class StringRecordManager extends Actor with ActorLogging {
   var stringValues = collection.mutable.Map[String, String]()
+  val scheduler = context.system.scheduler
+  implicit val executor = context.system.dispatcher
 
   private def updateNumberWithStep(key: String, step: Int, sender: ActorRef): Unit = {
     StringUtils.safeStringToInt(stringValues.getOrElseUpdate(key, "0")) match {
@@ -58,9 +64,19 @@ class StringRecordManager extends Actor with ActorLogging {
       val startIndex = StringUtils.safeStringToInt(start)
       val endIndex = StringUtils.safeStringToInt(end)
       if (startIndex.isDefined && endIndex.isDefined) {
-        val subString = stringValues.get(key).map(value => NOT_NULL_BULK_STRING(StringUtils.subString(value, start.toInt, end.toInt )))
+        val subString = stringValues.get(key).map(value => NOT_NULL_BULK_STRING(StringUtils.subString(value, start.toInt, end.toInt)))
           .getOrElse(NULL_BULK_STRING)
         sender() ! BULK_STRING_RESP_COMMAND(subString)
       }
+
+    case SETEX(key, expireTime, value) =>
+      stringValues.update(key, value)
+      scheduler.scheduleOnce(Duration(10, TimeUnit.SECONDS), new Runnable {
+        override def run(): Unit = {
+          stringValues.remove(key)
+          println("removed!")
+        }
+      })
+      sender() ! OK_RESP_COMMAND
   }
 }

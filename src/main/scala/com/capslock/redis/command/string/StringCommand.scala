@@ -30,6 +30,8 @@ object StringCommand {
 
   case class GETRANGE(key: String, start: String, end: String) extends StringCommand
 
+  case class SETEX(key: String, expireTime: String, value: String) extends StringCommand
+
   case class BULK_STRING_RESP_COMMAND(resp: BULK_STRING_RESP) extends RespCommand
 
   case class BULK_ARRAY_RESP_COMMAND(resp: BULK_ARRAY_RESP) extends RespCommand
