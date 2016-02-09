@@ -71,7 +71,7 @@ class StringRecordManager extends Actor with ActorLogging {
 
     case SETEX(key, expireTime, value) =>
       stringValues.update(key, value)
-      scheduler.scheduleOnce(Duration(10, TimeUnit.SECONDS), new Runnable {
+      scheduler.scheduleOnce(Duration(expireTime.toInt, TimeUnit.SECONDS), new Runnable {
         override def run(): Unit = {
           stringValues.remove(key)
           println("removed!")
