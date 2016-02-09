@@ -1,6 +1,6 @@
 package com.capslock.redis.command.string
 
-import com.capslock.redis.command.response.{BULK_ARRAY_RESP, BULK_STRING_RESP}
+import com.capslock.redis.command.response.{INTEGER_RESP, BULK_ARRAY_RESP, BULK_STRING_RESP}
 import com.capslock.redis.command.{RespCommand, RequestCommand}
 
 /**
@@ -16,7 +16,22 @@ object StringCommand {
 
   case class MGET(keyList: List[String]) extends StringCommand
 
-  case class GET_RESP(resp: BULK_STRING_RESP) extends RespCommand
+  case class MSET(keyValueList: List[String]) extends StringCommand
 
-  case class MGET_RESP(resp: BULK_ARRAY_RESP) extends RespCommand
+  case class STRLEN(key: String) extends StringCommand
+
+  case class INCR(key: String) extends StringCommand
+
+  case class INCRBY(key: String, step: String) extends StringCommand
+
+  case class DECR(key: String) extends StringCommand
+
+  case class DECRBY(key: String, step: String) extends StringCommand
+
+  case class BULK_STRING_RESP_COMMAND(resp: BULK_STRING_RESP) extends RespCommand
+
+  case class BULK_ARRAY_RESP_COMMAND(resp: BULK_ARRAY_RESP) extends RespCommand
+
+  case class INTEGER_RESP_COMMAND(resp: INTEGER_RESP) extends RespCommand
+
 }
