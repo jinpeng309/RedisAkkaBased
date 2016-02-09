@@ -74,7 +74,6 @@ class StringRecordManager extends Actor with ActorLogging {
       scheduler.scheduleOnce(Duration(expireTime.toInt, TimeUnit.SECONDS), new Runnable {
         override def run(): Unit = {
           stringValues.remove(key)
-          println("removed!")
         }
       })
       sender() ! OK_RESP_COMMAND
