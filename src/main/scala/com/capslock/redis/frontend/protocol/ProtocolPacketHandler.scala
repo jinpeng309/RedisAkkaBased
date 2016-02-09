@@ -24,7 +24,6 @@ final class ProtocolPacketHandler(session: ActorRef)(implicit system: ActorSyste
     setHandler(in, new InHandler {
       override def onPush(): Unit = {
         val chunk = grab(in)
-        println(s"get cmd $chunk")
         session ! chunk
         emit(out, chunk)
       }
