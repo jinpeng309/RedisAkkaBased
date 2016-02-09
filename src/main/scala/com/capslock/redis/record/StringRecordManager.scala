@@ -8,6 +8,7 @@ import com.capslock.redis.command.string.StringCommand._
 import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
 import com.capslock.redis.utils.StringUtils
 
+import scala.collection.Set
 import scala.concurrent.duration.Duration
 
 /**
@@ -15,6 +16,11 @@ import scala.concurrent.duration.Duration
   */
 class StringRecordManager extends Actor with ActorLogging {
   var stringValues = collection.mutable.Map[String, String]()
+
+  def getKeys: Set[String] = {
+    stringValues.keySet
+  }
+
   val scheduler = context.system.scheduler
   implicit val executor = context.system.dispatcher
 

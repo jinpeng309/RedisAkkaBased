@@ -7,7 +7,7 @@ import akka.stream.io._
 import akka.stream.scaladsl._
 import akka.stream.stage._
 import akka.util._
-import com.capslock.redis.CacheManger.CacheManager
+import com.capslock.redis.cache.CacheManager
 import com.capslock.redis.client.ClientSession
 import com.capslock.redis.command.response.RESP
 import com.capslock.redis.command.{RespCommand, Command}
