@@ -25,6 +25,7 @@ object RequestCommand {
       case List("INCRBY", key, step) => INCRBY(key, step)
       case List("DECR", key) => DECR(key)
       case List("DECRBY", key, step) => DECRBY(key, step)
+      case List("GETRANGE", key, start, end) => GETRANGE(key, start, end)
     }
   }
 }

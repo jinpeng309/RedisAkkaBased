@@ -53,5 +53,14 @@ class StringRecordManager extends Actor with ActorLogging {
 
     case DECRBY(key, step) =>
       updateNumberWithStep(key, -step.toInt, sender())
+
+    case GETRANGE(key, start, end) =>
+      val startIndex = StringUtils.safeStringToInt(start)
+      val endIndex = StringUtils.safeStringToInt(end)
+      if (startIndex.isDefined && endIndex.isDefined) {
+        val subString = stringValues.get(key).map(value => NOT_NULL_BULK_STRING(StringUtils.subString(value, start.toInt, end.toInt )))
+          .getOrElse(NULL_BULK_STRING)
+        sender() ! BULK_STRING_RESP_COMMAND(subString)
+      }
   }
 }
