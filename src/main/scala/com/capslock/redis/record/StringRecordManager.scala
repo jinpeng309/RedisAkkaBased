@@ -1,6 +1,6 @@
 package com.capslock.redis.record
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{ActorRef, Actor, ActorLogging}
 import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
 import com.capslock.redis.command.response._
 import com.capslock.redis.command.string.StringCommand._
@@ -11,6 +11,16 @@ import com.capslock.redis.utils.StringUtils
   */
 class StringRecordManager extends Actor with ActorLogging {
   var stringValues = collection.mutable.Map[String, String]()
+
+  private def updateNumberWithStep(key: String, step: Int, sender: ActorRef): Unit = {
+    StringUtils.safeStringToInt(stringValues.getOrElseUpdate(key, "0")) match {
+      case Some(number) =>
+        stringValues.update(key, (number + step).toString)
+        sender ! INTEGER_RESP_COMMAND(INTEGER_RESP(number + step))
+      case None =>
+        sender ! ERROR_RESP_COMMAND(ERROR_RESP("not a number"))
+    }
+  }
 
   override def receive: Receive = {
     case SET(key, value) =>
@@ -33,27 +43,15 @@ class StringRecordManager extends Actor with ActorLogging {
       sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(length))
 
     case INCR(key) =>
-      StringUtils.safeStringToInt(stringValues.getOrElseUpdate(key, "0")) match {
-        case Some(number) => stringValues.update(key, (number + 1).toString); sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(number + 1))
-        case None => sender() ! ERROR_RESP_COMMAND(ERROR_RESP("not a number"))
-      }
+      updateNumberWithStep(key, 1, sender())
 
     case INCRBY(key, step) =>
-      StringUtils.safeStringToInt(stringValues.getOrElseUpdate(key, "0")) match {
-        case Some(number) => stringValues.update(key, (number + step.toInt).toString); sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(number + step.toInt))
-        case None => sender() ! ERROR_RESP_COMMAND(ERROR_RESP("not a number"))
-      }
+      updateNumberWithStep(key, step.toInt, sender())
 
     case DECR(key) =>
-      StringUtils.safeStringToInt(stringValues.getOrElseUpdate(key, "0")) match {
-        case Some(number) => stringValues.update(key, (number - 1).toString); sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(number - 1))
-        case None => sender() ! ERROR_RESP_COMMAND(ERROR_RESP("not a number"))
-      }
+      updateNumberWithStep(key, -1, sender())
 
     case DECRBY(key, step) =>
-      StringUtils.safeStringToInt(stringValues.getOrElseUpdate(key, "0")) match {
-        case Some(number) => stringValues.update(key, (number - step.toInt).toString); sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(number - step.toInt))
-        case None => sender() ! ERROR_RESP_COMMAND(ERROR_RESP("not a number"))
-      }
+      updateNumberWithStep(key, -step.toInt, sender())
   }
 }
