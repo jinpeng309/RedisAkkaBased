@@ -30,11 +30,9 @@ class StringRecord extends Actor with ActorLogging with Stash {
     case SET_AND_SUSPEND(newValue) =>
       val oldValue = value
       value = newValue
-      println("SET AND SUSPEND")
       sender() ! OK_RESP_COMMAND
       context.become({
         case RESUME =>
-          println("RESUME")
           unstashAll()
           context.unbecome()
         case ROLL_BACK =>
