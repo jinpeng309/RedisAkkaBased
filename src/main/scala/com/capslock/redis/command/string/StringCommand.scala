@@ -12,7 +12,15 @@ object StringCommand {
 
   case class SET(key: String, value: String) extends StringCommand
 
+  case class SET_AND_SUSPEND(value: String) extends StringCommand
+
+  case object RESUME extends StringCommand
+
+  case object ROLL_BACK extends StringCommand
+
   case class GET(key: String) extends StringCommand
+
+  case class QUERY(key: String) extends StringCommand
 
   case class MGET(keyList: List[String]) extends StringCommand
 
