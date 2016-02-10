@@ -46,4 +46,10 @@ object StringCommand {
 
   case class INTEGER_RESP_COMMAND(resp: INTEGER_RESP) extends RespCommand
 
+  object INTEGER_RESP_COMMAND {
+    def apply(value: Int): INTEGER_RESP_COMMAND = {
+      INTEGER_RESP_COMMAND(INTEGER_RESP(value))
+    }
+  }
+
 }

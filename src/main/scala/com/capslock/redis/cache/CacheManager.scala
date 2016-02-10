@@ -46,7 +46,12 @@ class CacheManager extends Actor with ActorLogging {
           case List(key, value) => getOrCreateRecord[StringRecord](key).ask(SET_AND_SUSPEND(value))
         }))
 
-        futureList.map(resultList => {
+        futureList.failed.foreach {
+          case _ => keyValueList.sliding(2, 2).foreach({
+            case List(key, value) => getOrCreateRecord(key) ! ROLL_BACK
+          })
+        }
+        futureList.foreach(resultList => {
           if (resultList.exists(result => result != OK_RESP_COMMAND)) {
             keyValueList.sliding(2, 2).foreach({
               case List(key, value) => getOrCreateRecord(key) ! ROLL_BACK
@@ -75,7 +80,7 @@ class CacheManager extends Actor with ActorLogging {
 
       case GET(key) => forwardCmdOrReply(key, command, BULK_STRING_RESP_COMMAND(NULL_BULK_STRING))
 
-      case STRLEN(key) => forwardCmdOrReply(key, command, INTEGER_RESP_COMMAND(INTEGER_RESP(0)))
+      case STRLEN(key) => forwardCmdOrReply(key, command, INTEGER_RESP_COMMAND(0))
 
       case INCR(key) => getOrCreateRecordForForward[StringRecord](key, command)
 

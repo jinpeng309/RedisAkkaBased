@@ -39,7 +39,7 @@ class StringRecord extends Actor with ActorLogging with Stash {
           value = oldValue
           unstashAll()
           context.unbecome()
-        case _ => println("stash");stash()
+        case _ => println("stash"); stash()
       })
 
     case GET(_) =>
@@ -50,30 +50,30 @@ class StringRecord extends Actor with ActorLogging with Stash {
       sender() ! NOT_NULL_BULK_STRING(value)
 
     case STRLEN(_) =>
-      sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(value.length))
+      sender() ! INTEGER_RESP_COMMAND(value.length)
 
     case INCR(_) =>
       increaseNumberWithStep(1) match {
         case Left(errorMsg) => sender() ! ERROR_RESP_COMMAND(ERROR_RESP(errorMsg))
-        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(newValue))
+        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(newValue)
       }
 
     case INCRBY(_, step) =>
       increaseNumberWithStep(step.toInt) match {
         case Left(errorMsg) => sender() ! ERROR_RESP_COMMAND(ERROR_RESP(errorMsg))
-        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(newValue))
+        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(newValue)
       }
 
     case DECR(_) =>
       increaseNumberWithStep(-1) match {
         case Left(errorMsg) => sender() ! ERROR_RESP_COMMAND(ERROR_RESP(errorMsg))
-        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(newValue))
+        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(newValue)
       }
 
     case DECRBY(_, step) =>
       increaseNumberWithStep(-step.toInt) match {
         case Left(errorMsg) => sender() ! ERROR_RESP_COMMAND(ERROR_RESP(errorMsg))
-        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(INTEGER_RESP(newValue))
+        case Right(newValue) => sender() ! INTEGER_RESP_COMMAND(newValue)
       }
 
     case GETRANGE(key, start, end) =>
