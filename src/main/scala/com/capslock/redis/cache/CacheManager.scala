@@ -3,11 +3,13 @@ package com.capslock.redis.cache
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import com.capslock.redis.command.hash.HashCommand
+import com.capslock.redis.command.hash.HashCommand.{HGET, HSET}
 import com.capslock.redis.command.response._
 import com.capslock.redis.command.string.StringCommand
 import com.capslock.redis.command.string.StringCommand._
 import com.capslock.redis.command.{OK_RESP_COMMAND, NoneRequestCommand, RequestCommand, RespCommand}
-import com.capslock.redis.record.StringRecord
+import com.capslock.redis.record.{HashRecord, StringRecord}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -94,10 +96,14 @@ class CacheManager extends Actor with ActorLogging {
     }
   }
 
+  private def processHashCommand(command: HashCommand): Unit = {
+    getOrCreateRecordForForward[HashRecord](command.key, command)
+  }
 
   override def receive: Receive = {
     case NoneRequestCommand => log.info("ignore NoneCommand")
 
     case command: StringCommand => processStringCommand(command)
+    case command: HashCommand => processHashCommand(command)
   }
 }

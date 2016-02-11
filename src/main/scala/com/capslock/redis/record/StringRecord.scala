@@ -1,9 +1,9 @@
 package com.capslock.redis.record
 
-import akka.actor.{Stash, Actor, ActorLogging}
-import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
-import com.capslock.redis.command.response.{NULL_BULK_STRING, ERROR_RESP, INTEGER_RESP, NOT_NULL_BULK_STRING}
+import akka.actor.{Actor, ActorLogging, Stash}
+import com.capslock.redis.command.response.{ERROR_RESP, NOT_NULL_BULK_STRING, NULL_BULK_STRING}
 import com.capslock.redis.command.string.StringCommand._
+import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
 import com.capslock.redis.utils.StringUtils
 
 /**

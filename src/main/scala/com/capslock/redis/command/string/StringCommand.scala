@@ -1,6 +1,6 @@
 package com.capslock.redis.command.string
 
-import com.capslock.redis.command.response.{INTEGER_RESP, BULK_ARRAY_RESP, BULK_STRING_RESP}
+import com.capslock.redis.command.response.{NOT_NULL_BULK_STRING, INTEGER_RESP, BULK_ARRAY_RESP, BULK_STRING_RESP}
 import com.capslock.redis.command.{RespCommand, RequestCommand}
 
 /**
@@ -49,6 +49,18 @@ object StringCommand {
   object INTEGER_RESP_COMMAND {
     def apply(value: Int): INTEGER_RESP_COMMAND = {
       INTEGER_RESP_COMMAND(INTEGER_RESP(value))
+    }
+  }
+
+  object BULK_STRING_RESP_COMMAND {
+    def apply(value: String): BULK_STRING_RESP_COMMAND = {
+      BULK_STRING_RESP_COMMAND(NOT_NULL_BULK_STRING(value))
+    }
+  }
+
+  object BULK_ARRAY_RESP_COMMAND {
+    def apply(values: List[String]): BULK_ARRAY_RESP_COMMAND = {
+      BULK_ARRAY_RESP_COMMAND(BULK_ARRAY_RESP(values.map(value => NOT_NULL_BULK_STRING(value))))
     }
   }
 

@@ -10,6 +10,12 @@ object StringUtils {
     case _: Throwable => None
   }
 
+  def safeStringToFloat(str: String): Option[Float] = try {
+    Some(str.toFloat)
+  } catch {
+    case _: Throwable => None
+  }
+
   private def roundIndexInRange(index: Int, roundDelta: Int, range: Range): Int = {
     if (range.contains(index)) {
       if (index >= 0) {
