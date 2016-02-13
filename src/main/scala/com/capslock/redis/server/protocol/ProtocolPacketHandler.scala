@@ -1,4 +1,4 @@
-package com.capslock.redis.frontend.protocol
+package com.capslock.redis.server.protocol
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}

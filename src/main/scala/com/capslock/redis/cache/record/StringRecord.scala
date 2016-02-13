@@ -1,4 +1,4 @@
-package com.capslock.redis.record
+package com.capslock.redis.cache.record
 
 import akka.actor.{Actor, ActorLogging, Stash}
 import com.capslock.redis.command.response.{ERROR_RESP, NOT_NULL_BULK_STRING, NULL_BULK_STRING}

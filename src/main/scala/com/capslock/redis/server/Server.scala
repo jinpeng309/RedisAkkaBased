@@ -10,19 +10,18 @@ import akka.util._
 import com.capslock.redis.cache.CacheManager
 import com.capslock.redis.client.ClientSession
 import com.capslock.redis.command.response.RESP
-import com.capslock.redis.command.{RespCommand, Command}
-import com.capslock.redis.frontend.protocol.{ProtocolPacketHandler, ProtocolParser}
-import com.capslock.redis.router.CommandRouter
+import com.capslock.redis.command.{Command, RespCommand}
+import com.capslock.redis.server.protocol.{ProtocolPacketHandler, ProtocolParser}
 
 import scala.util._
 
 object Server {
 
-  def logicFlow(conn: Tcp.IncomingConnection, commandRouter: ActorRef, cacheManager: ActorRef)(implicit system: ActorSystem): Flow[ByteString, ByteString, Unit] =
+  def logicFlow(conn: Tcp.IncomingConnection,cacheManager: ActorRef)(implicit system: ActorSystem): Flow[ByteString, ByteString, Unit] =
     Flow.fromGraph(GraphDSL.create() { implicit builder ⇒
       import GraphDSL.Implicits._
 
-      val sessionClient = system.actorOf(ClientSession.props(commandRouter, cacheManager))
+      val sessionClient = system.actorOf(ClientSession.props(cacheManager))
       val sessionClientSource = Source.fromPublisher(ActorPublisher[Command](sessionClient))
       val session = builder.add(sessionClientSource)
 
@@ -44,12 +43,12 @@ object Server {
       FlowShape(delimiter.in, mapResp.out)
     })
 
-  def mkServer(address: String, port: Int, commandRouter: ActorRef, cacheManager: ActorRef)(implicit system: ActorSystem, materializer: Materializer): Unit = {
+  def mkServer(address: String, port: Int, cacheManager: ActorRef)(implicit system: ActorSystem, materializer: Materializer): Unit = {
     import system.dispatcher
 
     val connectionHandler = Sink.foreach[Tcp.IncomingConnection] { conn ⇒
       println(s"Incoming connection from: ${conn.remoteAddress}")
-      conn.handleWith(logicFlow(conn, commandRouter, cacheManager))
+      conn.handleWith(logicFlow(conn, cacheManager))
     }
     val incomingConnections = Tcp().bind(address, port)
     val binding = incomingConnections.to(connectionHandler).run()
@@ -74,9 +73,8 @@ object Server {
   def startServer(address: String, port: Int) = {
     implicit val system = ActorSystem("Server")
     implicit val materializer = ActorMaterializer()
-    implicit val commandRouter = system.actorOf(Props[CommandRouter])
     implicit val cacheManager = system.actorOf(Props[CacheManager])
 
-    mkServer(address, port, commandRouter, cacheManager)
+    mkServer(address, port, cacheManager)
   }
 }

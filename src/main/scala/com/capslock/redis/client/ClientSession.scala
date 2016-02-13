@@ -9,7 +9,7 @@ import com.capslock.redis.command.{RequestCommand, RespCommand}
 /**
   * Created by capsl.
   */
-class ClientSession(commandRouter: ActorRef, cacheManager: ActorRef) extends Actor with ActorLogging with ActorPublisher[RespCommand] {
+class ClientSession(cacheManager: ActorRef) extends Actor with ActorLogging with ActorPublisher[RespCommand] {
   override def receive: Receive = {
     case INFO => onNext(INFO_RESP(BULK_ARRAY_RESP(List(NOT_NULL_BULK_STRING("redis_version:999.999.999")))))
     case requestCommand: RequestCommand =>
@@ -21,5 +21,5 @@ class ClientSession(commandRouter: ActorRef, cacheManager: ActorRef) extends Act
 }
 
 object ClientSession {
-  def props(commandRouter: ActorRef, cacheManager: ActorRef) = Props(classOf[ClientSession], commandRouter, cacheManager)
+  def props(cacheManager: ActorRef) = Props(classOf[ClientSession], cacheManager)
 }

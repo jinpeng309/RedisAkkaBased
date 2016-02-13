@@ -9,7 +9,7 @@ import com.capslock.redis.command.response._
 import com.capslock.redis.command.string.StringCommand
 import com.capslock.redis.command.string.StringCommand._
 import com.capslock.redis.command.{OK_RESP_COMMAND, NoneRequestCommand, RequestCommand, RespCommand}
-import com.capslock.redis.record.{HashRecord, StringRecord}
+import com.capslock.redis.cache.record.{HashRecord, StringRecord}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

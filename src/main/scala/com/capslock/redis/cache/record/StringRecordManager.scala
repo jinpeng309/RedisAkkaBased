@@ -1,4 +1,4 @@
-package com.capslock.redis.record
+package com.capslock.redis.cache.record
 
 import java.util.concurrent.TimeUnit
 
