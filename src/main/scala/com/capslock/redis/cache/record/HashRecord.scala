@@ -1,10 +1,10 @@
 package com.capslock.redis.cache.record
 
 import akka.actor.{Actor, ActorLogging}
-import com.capslock.redis.command.{OK_RESP_COMMAND, ERROR_RESP_COMMAND}
 import com.capslock.redis.command.hash.HashCommand._
-import com.capslock.redis.command.response.{BULK_ARRAY_RESP, NOT_NULL_BULK_STRING, ERROR_RESP, NULL_BULK_STRING}
-import com.capslock.redis.command.string.StringCommand.{BULK_ARRAY_RESP_COMMAND, BULK_STRING_RESP_COMMAND, INTEGER_RESP_COMMAND}
+import com.capslock.redis.command.response.RespCommand.{BULK_ARRAY_RESP_COMMAND, BULK_STRING_RESP_COMMAND, INTEGER_RESP_COMMAND}
+import com.capslock.redis.command.response.{BULK_ARRAY_RESP, ERROR_RESP, NOT_NULL_BULK_STRING, NULL_BULK_STRING}
+import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
 import com.capslock.redis.utils.StringUtils
 
 /**
@@ -44,8 +44,7 @@ class HashRecord extends Actor with ActorLogging {
       sender() ! INTEGER_RESP_COMMAND(!containsKey)
 
     case HGET(_, key) =>
-      val respCommand = map.get(key).map(value => BULK_STRING_RESP_COMMAND(value)).getOrElse(BULK_STRING_RESP_COMMAND(NULL_BULK_STRING))
-      sender() ! respCommand
+      sender() ! BULK_STRING_RESP_COMMAND(map.get(key))
 
     case HDEL(_, fields) =>
       var removedKeys = 0

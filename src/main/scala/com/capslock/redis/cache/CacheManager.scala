@@ -3,13 +3,14 @@ package com.capslock.redis.cache
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import com.capslock.redis.cache.record.{HashRecord, ListRecord, StringRecord}
 import com.capslock.redis.command.hash.HashCommand
-import com.capslock.redis.command.hash.HashCommand.{HGET, HSET}
+import com.capslock.redis.command.list.ListCommand
+import com.capslock.redis.command.response.RespCommand.{INTEGER_RESP_COMMAND, BULK_STRING_RESP_COMMAND, BULK_ARRAY_RESP_COMMAND}
 import com.capslock.redis.command.response._
 import com.capslock.redis.command.string.StringCommand
 import com.capslock.redis.command.string.StringCommand._
-import com.capslock.redis.command.{OK_RESP_COMMAND, NoneRequestCommand, RequestCommand, RespCommand}
-import com.capslock.redis.cache.record.{HashRecord, StringRecord}
+import com.capslock.redis.command.{NoneRequestCommand, OK_RESP_COMMAND, RequestCommand, RespCommand}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -100,10 +101,15 @@ class CacheManager extends Actor with ActorLogging {
     getOrCreateRecordForForward[HashRecord](command.key, command)
   }
 
+  private def processListCommand(command: ListCommand): Unit = {
+    getOrCreateRecordForForward[ListRecord](command.key, command)
+  }
+
   override def receive: Receive = {
     case NoneRequestCommand => log.info("ignore NoneCommand")
 
     case command: StringCommand => processStringCommand(command)
     case command: HashCommand => processHashCommand(command)
+    case command: ListCommand => processListCommand(command)
   }
 }

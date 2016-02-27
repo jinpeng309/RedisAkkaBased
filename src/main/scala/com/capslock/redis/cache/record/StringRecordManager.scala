@@ -3,6 +3,7 @@ package com.capslock.redis.cache.record
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.capslock.redis.command.response.RespCommand.{INTEGER_RESP_COMMAND, BULK_ARRAY_RESP_COMMAND, BULK_STRING_RESP_COMMAND}
 import com.capslock.redis.command.response._
 import com.capslock.redis.command.string.StringCommand._
 import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
@@ -40,7 +41,7 @@ class StringRecordManager extends Actor with ActorLogging {
       sender() ! OK_RESP_COMMAND
 
     case GET(key) =>
-      sender() ! BULK_STRING_RESP_COMMAND(stringValues.get(key).map(value => NOT_NULL_BULK_STRING(value)).getOrElse(NULL_BULK_STRING))
+      sender() ! BULK_STRING_RESP_COMMAND(stringValues.get(key))
 
     case MGET(keyList) =>
       val resultList = keyList.map(key => stringValues.get(key).map(value => NOT_NULL_BULK_STRING(value)).getOrElse(NULL_BULK_STRING))

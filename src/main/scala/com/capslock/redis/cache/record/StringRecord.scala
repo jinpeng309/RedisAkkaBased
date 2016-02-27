@@ -1,6 +1,7 @@
 package com.capslock.redis.cache.record
 
 import akka.actor.{Actor, ActorLogging, Stash}
+import com.capslock.redis.command.response.RespCommand.{INTEGER_RESP_COMMAND, BULK_STRING_RESP_COMMAND}
 import com.capslock.redis.command.response.{ERROR_RESP, NOT_NULL_BULK_STRING, NULL_BULK_STRING}
 import com.capslock.redis.command.string.StringCommand._
 import com.capslock.redis.command.{ERROR_RESP_COMMAND, OK_RESP_COMMAND}
@@ -43,7 +44,7 @@ class StringRecord extends Actor with ActorLogging with Stash {
       })
 
     case GET(_) =>
-      sender() ! BULK_STRING_RESP_COMMAND(NOT_NULL_BULK_STRING(value))
+      sender() ! BULK_STRING_RESP_COMMAND(value)
 
     case QUERY(_) =>
       println("QUERY")
@@ -81,7 +82,7 @@ class StringRecord extends Actor with ActorLogging with Stash {
       val endIndex = StringUtils.safeStringToInt(end)
       if (startIndex.isDefined && endIndex.isDefined) {
         val subString = StringUtils.subString(value, start.toInt, end.toInt)
-        sender() ! BULK_STRING_RESP_COMMAND(NOT_NULL_BULK_STRING(subString))
+        sender() ! BULK_STRING_RESP_COMMAND(subString)
       } else {
         sender() ! NULL_BULK_STRING
       }

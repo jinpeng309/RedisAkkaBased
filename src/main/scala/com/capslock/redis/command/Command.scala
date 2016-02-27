@@ -1,6 +1,7 @@
 package com.capslock.redis.command
 
 import com.capslock.redis.command.hash.HashCommand._
+import com.capslock.redis.command.list.ListCommand._
 import com.capslock.redis.command.response.{OK_RESP, RESP}
 import com.capslock.redis.command.string.StringCommand._
 
@@ -45,6 +46,16 @@ object RequestCommand {
       case List("HSETNX", key, field, value) => HSETNX(key, field, value)
       case List("HSTRLEN", key, field) => HSTRLEN(key, field)
       case List("HVALS", key) => HVALS(key)
+
+      //Lists
+      case "LPUSH" :: key :: values => LPUSH(key, values)
+      case List("LPOP", key) => LPOP(key)
+      case List("LLEN", key) => LLEN(key)
+      case List("LINDEX", key, value) => LINDEX(key, value)
+      case List("LSET", key, index, value) => LSET(key, index, value)
+      case List("LREM", key, count, value) => LREM(key, count, value)
+      case List("LRANGE", key, start, stop) => LRANGE(key, start, stop)
+
     }
   }
 }
