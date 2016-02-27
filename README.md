@@ -1,0 +1,2 @@
+# RedisAkkaBased
+基于akka实现的redis缓存数据库,使用scala语言(个人用来学习akka和scala的玩具项目)
