@@ -25,4 +25,6 @@ object ListCommand {
 
   case class LRANGE(key: String, start: String, stop: String) extends ListCommand
 
+  case class BLPOP(key: String, timeout: String) extends ListCommand
+
 }

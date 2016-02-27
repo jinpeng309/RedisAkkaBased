@@ -55,6 +55,7 @@ object RequestCommand {
       case List("LSET", key, index, value) => LSET(key, index, value)
       case List("LREM", key, count, value) => LREM(key, count, value)
       case List("LRANGE", key, start, stop) => LRANGE(key, start, stop)
+      case List("BLPOP", key, timeout) => BLPOP(key, timeout)
 
     }
   }
