@@ -64,7 +64,8 @@ object Server {
   def mapResponse(system: ActorSystem) = new PushStage[Command, ByteString] {
     override def onPush(cmd: Command, ctx: Context[ByteString]) = {
       cmd match {
-        case respCommand: RespCommand => ctx.push(ByteString(RESP.encode(respCommand.resp)))
+        case respCommand: RespCommand =>
+          ctx.push(ByteString(RESP.encode(respCommand.resp)))
         case _ => onPull(ctx)
       }
     }

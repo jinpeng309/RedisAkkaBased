@@ -1,5 +1,7 @@
 package com.capslock.redis.command.response
 
+import java.util.Optional
+
 import com.capslock.redis.command.RespCommand
 
 /**
@@ -37,6 +39,15 @@ object RespCommand {
   object BULK_ARRAY_RESP_COMMAND {
     def apply(values: List[String]): BULK_ARRAY_RESP_COMMAND = {
       BULK_ARRAY_RESP_COMMAND(BULK_ARRAY_RESP(values.map(value => NOT_NULL_BULK_STRING(value))))
+    }
+
+    def apply(values: Option[List[String]]): BULK_ARRAY_RESP_COMMAND = {
+      values match {
+        case Some(valueList) =>
+          apply(valueList)
+        case None =>
+          BULK_ARRAY_RESP_COMMAND(BULK_ARRAY_RESP(List(NULL_BULK_STRING)))
+      }
     }
   }
 

@@ -118,7 +118,8 @@ class ListRecord extends Actor with ActorLogging with Stash {
               blockClientList.append(blockClient)
 
             case LPUSH(_, values) =>
-              listBuffer.insertAll(0, values)
+              listBuffer.insertAll(0, values.reverse)
+              sender() ! INTEGER_RESP_COMMAND(listBuffer.size)
               for (element <- listBuffer; blockClient <- blockClientList) {
                 listBuffer.remove(0)
                 blockClientList.remove(0)
@@ -130,7 +131,7 @@ class ListRecord extends Actor with ActorLogging with Stash {
             case Timeout(id) =>
               blockClientList.find(blockClient => blockClient.clientId == id) match {
                 case Some(blockClient) =>
-                  blockClient.client ! BULK_STRING_RESP_COMMAND(None)
+                  blockClient.client ! BULK_ARRAY_RESP_COMMAND(None)
                   blockClient.timer.cancel()
                 case _ =>
               }
