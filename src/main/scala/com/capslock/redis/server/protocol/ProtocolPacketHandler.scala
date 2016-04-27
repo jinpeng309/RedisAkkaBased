@@ -3,7 +3,7 @@ package com.capslock.redis.server.protocol
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.stream.{Attributes, FlowShape, Inlet, Outlet}
-import com.capslock.redis.command.Command
+import com.capslock.redis.command.{Command, RespCommand}
 
 /**
   * Created by capsl on 2016/2/7.
@@ -11,10 +11,10 @@ import com.capslock.redis.command.Command
 
 
 final class ProtocolPacketHandler(session: ActorRef)(implicit system: ActorSystem)
-  extends GraphStage[FlowShape[Command, Command]] {
+  extends GraphStage[FlowShape[Command, RespCommand]] {
 
   private val in = Inlet[Command]("in")
-  private val out = Outlet[Command]("out")
+  private val out = Outlet[RespCommand]("out")
 
   override def shape = FlowShape(in, out)
 
@@ -23,10 +23,10 @@ final class ProtocolPacketHandler(session: ActorRef)(implicit system: ActorSyste
 
     setHandler(in, new InHandler {
       override def onPush(): Unit = {
-        val chunk = grab(in)
-        println(s"cmd $chunk")
-        session ! chunk
-        emit(out, chunk)
+        val command = grab(in)
+        println(s"receive command $command")
+        session ! command
+        pull(in)
       }
     })
 
