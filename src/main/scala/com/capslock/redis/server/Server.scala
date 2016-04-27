@@ -37,7 +37,7 @@ object Server {
       val merge = builder.add(Merge[RespCommand](2))
       val mapResp = builder.add(mapRespFlow)
       delimiter ~> packetHandler ~> merge
-      session ~> merge ~> mapResp
+                         session ~> merge ~> mapResp
 
       FlowShape(delimiter.in, mapResp.out)
     })
