@@ -32,7 +32,7 @@ object Server {
       val delimiter = builder.add(Flow[ByteString]
         .via(Framing.delimiter(ByteString("\n"), maximumFrameLength = 256, allowTruncation = true))
         .map(_.utf8String)
-        .map { msg => println(s"receive msg $msg"); msg.substring(0, msg.length - 1) })
+        .map { msg => msg.substring(0, msg.length - 1) })
 
       val merge = builder.add(Merge[RespCommand](2))
       val mapResp = builder.add(mapRespFlow)
